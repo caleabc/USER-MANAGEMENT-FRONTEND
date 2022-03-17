@@ -25,6 +25,12 @@ function Home() {
   var [role, setRole] = React.useState("");
   var [birthdate, setBirthdate] = React.useState([new Date()]);
 
+  var [users, setUsers] = React.useState([]);
+
+  var [message, setMessage] = React.useState("");
+  var [showMessage, setShowMessage] = React.useState(false);
+  var [messageColor, setMessageColor] = React.useState(undefined);
+
   // protectRoute
   // Protecting the route from unathorized access
   // adding checkpoint in endpoint
@@ -42,16 +48,84 @@ function Home() {
       birthdate: birthdate,
     };
 
+    // check if email is already taken
+    for (var i = 0; i < users.length; i++) {
+      console.log("test");
+      if (email == users[i]["email"]) {
+        setMessage("Email already taken");
+        setShowMessage(true);
+        setMessageColor("#FA8072");
+
+        // adding setTimeout
+        // setTimeout is asynchronous
+        setTimeout(function () {
+          setShowMessage(false);
+        }, 10000);
+
+        return;
+      }
+    }
+
     // communicate to backend and get all users
     // original address ==> "/user/create"
     var send = await axios.post(
       `http://localhost:5000/${protectRoute}/user/create`,
       data
     );
+
+    // update users state, after adding
+    // communicate to backend and get all users
+    // original address => "/"
+    var getUsers = await axios.get(`http://localhost:5000/${protectRoute}/`);
+    setUsers(getUsers["data"]);
+
+    setMessage("User added");
+    setShowMessage(true);
+    setMessageColor("#8A9A5B");
+
+    // adding setTimeout
+    // setTimeout is asynchronous
+    setTimeout(function () {
+      setShowMessage(false);
+    }, 10000);
+
+    setLastname("");
+    setFirstname("");
+    setMiddlename("");
+    setEmail("");
+    setRole("");
+    setBirthdate([new Date()]);
   }
+
+  React.useEffect(async function () {
+    // communicate to backend and get all users
+    // original address => "/"
+    var getUsers = await axios.get(`http://localhost:5000/${protectRoute}/`);
+
+    setUsers(getUsers["data"]);
+  }, []);
 
   return (
     <>
+      {showMessage && (
+        <div
+          style={{
+            position: "fixed",
+            left: "50%",
+            transform: "translateX(-50%)",
+
+            paddingTop: ".5rem",
+            paddingBottom: ".5rem",
+            paddingLeft: "1.2rem",
+            paddingRight: "1.2rem",
+            fontFamily: "Montserrat",
+            backgroundColor: messageColor,
+          }}
+        >
+          {message}
+        </div>
+      )}
+
       <Grid>
         <Cell span={4}>
           <div
@@ -129,8 +203,15 @@ function Home() {
                 border: "2px solid gray",
                 borderRadius: "5px",
                 height: "30rem",
+                padding: "1rem",
               }}
-            ></div>
+            >
+              {users.map((u) => (
+                <p style={{ fontFamily: "Montserrat" }}>
+                  {u["lastname"]}, {u["firstname"]}
+                </p>
+              ))}
+            </div>
           </div>
         </Cell>
 
