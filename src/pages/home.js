@@ -42,6 +42,7 @@ function Home() {
     React.useState("create");
 
   var [userStatus, setUserStatus] = React.useState(true);
+  var [statusValue, setStatusValue] = React.useState(true);
 
   var [isLoading, setIsLoading] = React.useState(false);
 
@@ -72,7 +73,7 @@ function Home() {
     setBirthdate([new Date()]);
   }
 
-  function handleClickEdit() {
+  function handleClickEditUser() {
     // currentUser["userRole"] needs to be extracted
     var userRoleValue = undefined;
     for (var i = 0; i < roles.length; i++) {
@@ -117,20 +118,47 @@ function Home() {
     }
   }
 
-  async function handleClickDelete(email) {
+  async function handleClickDeleteUser(email) {
     // communicate to backend for deleting user
     // original address => "/user/delete/:id"
     var send = await axios.get(
       `http://localhost:5000/${protectRoute}/user/delete/${email}`
     );
 
-    setMessage("User deleted");
+    if (send["data"] == "OK") {
+      var getUsers = await axios.get(`http://localhost:5000/${protectRoute}/`);
+
+      setUsers(getUsers["data"]["users"]);
+      setRoles(getUsers["data"]["roles"]);
+
+      setMessage("User deleted");
+      setShowMessage(true);
+      setMessageColor("#FA8072");
+
+      var handleClickAddUserMate = handleClickAddUser;
+      handleClickAddUserMate();
+
+      // adding setTimeout
+      // setTimeout is asynchronous
+      setTimeout(function () {
+        setShowMessage(false);
+      }, 10000);
+    }
+  }
+
+  function handleGetRole() {
+    for (var i = 0; i < roles.length; i++) {
+      if (roles[i]["_id"] == currentUser["userRole"]) {
+        return roles[i]["name"];
+      }
+    }
+  }
+
+  function handleClickStatus() {
+    setStatusValue(false);
+    setMessage("Account inactive");
     setShowMessage(true);
     setMessageColor("#FA8072");
-
-    var handleClickAddUserMate = handleClickAddUser;
-    // call
-    handleClickAddUserMate();
 
     // adding setTimeout
     // setTimeout is asynchronous
@@ -233,6 +261,56 @@ function Home() {
     }
 
     // end of handleSubmitCreate
+  }
+
+  async function handleSubmitEdit(e) {
+    e.preventDefault();
+
+    // set value
+    setIsLoading(true);
+
+    var data = {
+      lastname: lastname,
+      firstname: firstname,
+      middlename: middlename,
+      email: email,
+      userRole: role[0]["id"],
+      birthdate: birthdate,
+    };
+
+    data["originalUserRoleId"] = currentUser["userRole"];
+    data["currentUserId"] = currentUser["_id"];
+
+    // communicate to backend for updating user
+    // original address => "/user/update"
+    var send = await axios.post(
+      `http://localhost:5000/${protectRoute}/user/update`,
+      data
+    );
+
+    if (send["data"] == "OK") {
+      var getUsers = await axios.get(`http://localhost:5000/${protectRoute}/`);
+
+      setUsers(getUsers["data"]["users"]);
+      setRoles(getUsers["data"]["roles"]);
+
+      setMessage("User updated");
+      setShowMessage(true);
+      setMessageColor("#8A9A5B");
+
+      setIsLoading(false);
+
+      // adding setTimeout
+      // setTimeout is asynchronous
+      setTimeout(function () {
+        setShowMessage(false);
+      }, 10000);
+
+      var handleClickAddUserMate = handleClickAddUser;
+      handleClickAddUserMate();
+    }
+
+    // end of handleSubmitEdit
   }
 
   async function handleSubmit(e) {
@@ -475,14 +553,44 @@ function Home() {
         {/* details element */}
         {currentSelectedSection == "details" && (
           <Cell span={5}>
-            <Details />
+            <Details
+              lastname={currentUser["lastname"]}
+              firstname={currentUser["firstname"]}
+              middlename={currentUser["middlename"]}
+              birthdate={currentUser["birthdate"].toString().slice(0, 10)}
+              email={currentUser["email"]}
+              role={handleGetRole()}
+              handleClickStatusButton={handleClickStatus}
+              status={statusValue}
+              handleClickEdit={handleClickEditUser}
+              handleClickDelete={function () {
+                handleClickDeleteUser(currentUser["email"]);
+              }}
+            />
           </Cell>
         )}
 
         {/* edit element */}
         {currentSelectedSection == "edit" && (
           <Cell span={5}>
-            <Edit />
+            <Edit
+              handleSubmitEditComponent={handleSubmitEdit}
+              valueLastname={lastname}
+              onChangeLastname={(e) => setLastname(e.currentTarget.value)}
+              valueFirstname={firstname}
+              onChangeFirstname={(e) => setFirstname(e.currentTarget.value)}
+              valueMiddlename={middlename}
+              onChangeMiddlename={(e) => setMiddlename(e.currentTarget.value)}
+              valueBirthdate={birthdate}
+              onChangeBirthdate={({ date }) =>
+                setBirthdate(Array.isArray(date) ? date : [date])
+              }
+              valueEmail={email}
+              onChangeEmail={(e) => setEmail(e.currentTarget.value)}
+              valueRole={role}
+              onChangeRole={(params) => setRole(params.value)}
+              loading={isLoading}
+            />
           </Cell>
         )}
 

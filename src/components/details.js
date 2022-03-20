@@ -5,16 +5,6 @@ import Toggle from "react-toggle";
 
 function Details(props) {
   // React.useState here...
-  var [userStatus, setUserStatus] = React.useState(true);
-
-  function handleClickStatusButton() {
-    if (userStatus == true) {
-      setUserStatus(false);
-    } else {
-      setUserStatus(true);
-    }
-  }
-
   return (
     <>
       <div
@@ -238,8 +228,8 @@ function Details(props) {
             Active
           </p>
           <div style={{ display: "inline", width: "20rem" }}>
-            <p onClick={handleClickStatusButton}>
-              <Toggle checked={userStatus} icons={false} />
+            <p onClick={props.handleClickStatusButton}>
+              <Toggle checked={props.status} icons={false} />
             </p>
           </div>
         </div>

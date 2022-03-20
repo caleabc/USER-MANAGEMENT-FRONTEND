@@ -3,6 +3,7 @@ import { Input } from "baseui/input";
 import { DatePicker } from "baseui/datepicker";
 import { Select } from "baseui/select";
 import { Button, KIND, SHAPE } from "baseui/button";
+import { Spinner } from "baseui/spinner";
 
 function Edit(props) {
   // React.useState here...
@@ -216,14 +217,20 @@ function Edit(props) {
               labelKey="id"
               valueKey="color"
               value={props.valueRole}
-              placeholder="Select role"
               onChange={props.onChangeRole}
             />
           </div>
 
           <div>
             <Button type="submit" shape={SHAPE.pill}>
-              Update
+              {props.loading == false ? (
+                <span>Update</span>
+              ) : (
+                <span>
+                  <Spinner color="white" size="1rem" />{" "}
+                  <span style={{ marginLeft: ".5rem" }}>Please wait </span>
+                </span>
+              )}
             </Button>
           </div>
         </form>
