@@ -44,6 +44,8 @@ function Home() {
   var [userStatus, setUserStatus] = React.useState(true);
   var [statusValue, setStatusValue] = React.useState(true);
 
+  var [filterList, setFilterList] = React.useState(true);
+
   var [isLoading, setIsLoading] = React.useState(false);
 
   var [isUsersDataChange, setIsUsersDataChange] = React.useState(false);
@@ -165,6 +167,11 @@ function Home() {
     setTimeout(function () {
       setShowMessage(false);
     }, 10000);
+  }
+
+  function handleFilterList() {
+    (params) => setFilterList(params.value);
+    console.log(filterList);
   }
 
   async function handleSubmitCreate(e) {
@@ -431,7 +438,6 @@ function Home() {
           {message}
         </div>
       )}
-
       <Grid>
         <Cell span={4}>
           <div
@@ -485,12 +491,15 @@ function Home() {
                 }}
                 searchable={false}
                 options={[
+                  { id: "ALL", color: "ALL" },
                   { id: "STUDENT", color: "STUDENT" },
                   { id: "TEACHER", color: "TEACHER" },
                   { id: "ADMINISTRATOR", color: "ADMINISTRATOR" },
                 ]}
                 labelKey="id"
                 valueKey="color"
+                value={filterList}
+                onChange={handleFilterList}
               />
             </div>
 
