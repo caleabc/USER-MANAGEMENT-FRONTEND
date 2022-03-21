@@ -52,6 +52,7 @@ function Home() {
     var [isUsersDataChange, setIsUsersDataChange] = React.useState(false);
 
     var [query, setQuery] = React.useState("");
+    var [currentHoverUser, setCurrentHoverUser] = React.useState("");
 
     // protectRoute
     // Protecting the route from unathorized access
@@ -191,6 +192,14 @@ function Home() {
             }
         }
         setUsers([])
+    }
+
+    function handleMouseEnter(id) {
+        setCurrentHoverUser(id)
+    }
+
+    function handleMouseLeave() {
+        setCurrentHoverUser("")
     }
 
     async function handleSubmitCreate(e) {
@@ -521,6 +530,7 @@ function Home() {
                                     alignSelf: "center",
                                     color: "gray",
                                     fontSize: "2.5rem",
+                                    cursor: "pointer",
                                 }}
                                 onClick={handleClickAddUser}
                             >
@@ -584,8 +594,16 @@ function Home() {
                         >
                             {users.map((u) => (
                                 <p
-                                    style={{fontFamily: "Montserrat"}}
+                                    style={{
+                                        fontFamily: "Montserrat",
+                                        cursor: "pointer",
+                                        backgroundColor: currentHoverUser == u["_id"] ? "lightgray" : ""
+                                    }}
                                     key={u["_id"]}
+                                    onMouseEnter={function () {
+                                        handleMouseEnter(u["_id"])
+                                    }}
+                                    onMouseLeave={handleMouseLeave}
                                     onClick={function () {
                                         handleClickName(u["_id"]);
                                     }}
@@ -597,6 +615,7 @@ function Home() {
                     </div>
                 </Cell>
 
+                
                 {/* create element */}
                 {currentSelectedSection == "create" && (
                     <Cell span={5}>
