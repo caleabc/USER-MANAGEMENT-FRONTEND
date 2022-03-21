@@ -510,7 +510,7 @@ function Home() {
                 <Cell span={4}>
                     <div
                         style={{
-                            borderRight: "3px solid lightgray",
+                            borderRight: "10px solid lightgray",
                             height: "100vh",
                             paddingRight: "1rem",
                         }}
@@ -614,8 +614,8 @@ function Home() {
                         </div>
                     </div>
                 </Cell>
-
                 
+
                 {/* create element */}
                 {currentSelectedSection == "create" && (
                     <Cell span={5}>
