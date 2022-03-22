@@ -15,6 +15,8 @@ import {ethers} from "ethers";
 
 import Toggle from "react-toggle";
 
+import Darkmode from "../components/darkmode";
+
 import Notif from "../components/notif";
 import SearchElement from "../components/searchElement"
 import Create from "../components/create";
@@ -62,14 +64,33 @@ function Home() {
     var [query, setQuery] = React.useState("");
     var [currentHoverUser, setCurrentHoverUser] = React.useState("");
 
+    var [currentMode, setCurrentMode] = React.useState("light")
+
     // protectRoute
     // Protecting the route from unathorized access
     // adding checkpoint in endpoint
     var protectRoute = process.env.REACT_APP_PROTECT_ROUTE;
     var etherscanKey = process.env.REACT_APP_ETHERSCAN_KEY;
 
-    async function handleClickName(userid) {
+    function handleClickDarkmode() {
+        if (currentMode == "light") {
+            // Update Css variables
+            var nid = document.querySelector(":root");
+            nid.style.setProperty("--backgroundColor", "#1F2023");
+            nid.style.setProperty("--color", "#EFEFEF");
+            setCurrentMode("black")
+            return
+        } else {
+            // Update Css variables
+            var nid = document.querySelector(":root");
+            nid.style.setProperty("--backgroundColor", "#FAFAFA");
+            nid.style.setProperty("--color", "#1F2023");
+            setCurrentMode("light")
+            return
+        }
+    }
 
+    async function handleClickName(userid) {
         for (var i = 0; i < users.length; i++) {
             if (users[i]["_id"] == userid) {
                 setCurrentUser(users[i]);
@@ -77,7 +98,6 @@ function Home() {
                 return;
             }
         }
-
     }
 
     function handleClickAddUser() {
@@ -518,6 +538,16 @@ function Home() {
             {showMessage && (
                 <Notif messageColor={messageColor} message={message}/>
             )}
+
+            <div style={{
+                position: "fixed",
+                right: "0",
+                padding: "1.5rem",
+                cursor: "pointer"
+            }}
+            >
+                <Darkmode currentMode={currentMode} onClickDarkmode={handleClickDarkmode}/>
+            </div>
 
             <Grid>
                 <Cell span={4}>
