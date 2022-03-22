@@ -108,6 +108,8 @@ function Home() {
         setEmail("");
         setRole("");
         setBirthdate([new Date()]);
+
+        setCurrentUser(undefined)
     }
 
     function handleClickEditUser() {
@@ -543,7 +545,8 @@ function Home() {
                 position: "fixed",
                 right: "0",
                 padding: "1.5rem",
-                cursor: "pointer"
+                cursor: "pointer",
+                display: "none"
             }}
             >
                 <Darkmode currentMode={currentMode} onClickDarkmode={handleClickDarkmode}/>
@@ -690,6 +693,7 @@ function Home() {
                             onChangeEmail={(e) => setEmail(e.currentTarget.value)}
                             valueRole={role}
                             onChangeRole={(params) => setRole(params.value)}
+                            cancelButton={handleClickAddUser}
                             loading={isLoading}
                         />
                     </Cell>
