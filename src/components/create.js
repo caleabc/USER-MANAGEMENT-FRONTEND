@@ -126,12 +126,14 @@ function Create(props) {
                             Wallet Address
                         </p>
                         <Input
-                            placeholder="Optional"
+                            required
                             overrides={{
                                 Root: {
                                     style: {width: "20rem", display: "inline-block"},
                                 },
                             }}
+                            value={props.valueWalletAddress}
+                            onChange={props.onChangeWalletAddress}
                         />
                     </div>
 

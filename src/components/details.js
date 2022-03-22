@@ -132,11 +132,16 @@ function Details(props) {
                     </p>
                     <p
                         style={{
+                            display: "flex",
+                            justifyContent: "space-between",
                             fontFamily: "Montserrat",
                             width: "20rem",
+                            margin: "0",
                         }}
+                        onClick={props.copyWalletAddress}
                     >
-                        Wallet Address
+                        <p>{props.walletAddress}...</p>
+                        <p><i className="bi bi-clipboard"></i></p>
                     </p>
                 </div>
 

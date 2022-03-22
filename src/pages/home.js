@@ -12,6 +12,8 @@ import {DatePicker} from "baseui/datepicker";
 import {Select} from "baseui/select";
 import {Search} from "baseui/icon";
 
+import {ethers} from "ethers";
+
 import Toggle from "react-toggle";
 
 import Create from "../components/create";
@@ -26,9 +28,13 @@ function Home() {
     var [lastname, setLastname] = React.useState("");
     var [firstname, setFirstname] = React.useState("");
     var [middlename, setMiddlename] = React.useState("");
+    var [walletAddress, setWalletAddress] = React.useState("");
     var [email, setEmail] = React.useState("");
     var [role, setRole] = React.useState("");
     var [birthdate, setBirthdate] = React.useState([new Date()]);
+
+    // ethereum data
+    var [ethData, setEthData] = React.useState([]);
 
     var [users, setUsers] = React.useState([]);
     var [roles, setRoles] = React.useState([]);
@@ -58,8 +64,10 @@ function Home() {
     // Protecting the route from unathorized access
     // adding checkpoint in endpoint
     var protectRoute = process.env.REACT_APP_PROTECT_ROUTE;
+    var etherscanKey = process.env.REACT_APP_ETHERSCAN_KEY;
 
-    function handleClickName(userid) {
+    async function handleClickName(userid) {
+
         for (var i = 0; i < users.length; i++) {
             if (users[i]["_id"] == userid) {
                 setCurrentUser(users[i]);
@@ -67,6 +75,7 @@ function Home() {
                 return;
             }
         }
+
     }
 
     function handleClickAddUser() {
@@ -209,6 +218,7 @@ function Home() {
             lastname: lastname,
             firstname: firstname,
             middlename: middlename,
+            walletAddress: walletAddress,
             email: email,
             userRole: role[0]["id"],
             birthdate: birthdate,
@@ -290,6 +300,7 @@ function Home() {
             setLastname("");
             setFirstname("");
             setMiddlename("");
+            setWalletAddress("");
             setEmail("");
             setRole("");
             setBirthdate([new Date()]);
@@ -434,6 +445,19 @@ function Home() {
         setBirthdate([new Date()]);
     }
 
+    // ethData
+    React.useEffect(async function () {
+
+        if (currentUser == undefined) {
+            return
+        }
+
+        // get ethereum data
+        var getEth = await axios.get(`https://api-kovan.etherscan.io/api?module=account&action=txlist&address=${currentUser["walletAddress"]}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${etherscanKey}`)
+
+        setEthData(getEth["data"]["result"])
+    }, [currentUser])
+
     // filter useEffect
     React.useEffect(async function () {
         if (filterListValue.length !== 0) {
@@ -483,7 +507,10 @@ function Home() {
         setRoles(getUsers["data"]["roles"]);
     }, []);
 
-    console.log(usersDataCopyForFilter)
+    console.log(ethers.utils.formatEther("1000001647867584"))
+
+    // ethData
+    console.log(ethData)
     console.log("Page render count: " + Math.random());
 
     return (
@@ -614,7 +641,7 @@ function Home() {
                         </div>
                     </div>
                 </Cell>
-                
+
 
                 {/* create element */}
                 {currentSelectedSection == "create" && (
@@ -627,6 +654,8 @@ function Home() {
                             onChangeFirstname={(e) => setFirstname(e.currentTarget.value)}
                             valueMiddlename={middlename}
                             onChangeMiddlename={(e) => setMiddlename(e.currentTarget.value)}
+                            valueWalletAddress={walletAddress}
+                            onChangeWalletAddress={(e) => setWalletAddress(e.currentTarget.value)}
                             valueBirthdate={birthdate}
                             onChangeBirthdate={({date}) =>
                                 setBirthdate(Array.isArray(date) ? date : [date])
@@ -649,6 +678,10 @@ function Home() {
                             middlename={currentUser["middlename"]}
                             birthdate={currentUser["birthdate"].toString().slice(0, 10)}
                             email={currentUser["email"]}
+                            walletAddress={currentUser["walletAddress"].substring(0, 10)}
+                            copyWalletAddress={() => {
+                                navigator.clipboard.writeText(currentUser["walletAddress"])
+                            }}
                             role={handleGetRole()}
                             handleClickStatusButton={handleClickStatus}
                             status={statusValue}
@@ -685,7 +718,58 @@ function Home() {
                 )}
 
                 <Cell span={3}>
-                    <TransactionHistory/>
+                    {/* TransactionHistory component will be refactor*/}
+                    {/* <TransactionHistory transactions={ethData}/> */}
+
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <p
+                            style={{
+                                fontFamily: "Montserrat",
+                                fontSize: "1.5rem",
+                                fontWeight: "900",
+                                marginTop: "3.5rem",
+                            }}
+                        >
+                            Transaction History
+                        </p>
+                    </div>
+
+                    <div
+                        style={{
+                            marginTop: "1rem",
+                            border: "2px solid gray",
+                            borderRadius: "5px",
+                            padding: "1rem",
+                            fontFamily: "Montserrat",
+                        }}
+                    >
+                        <div style={{display: "flex"}}>
+                            <div style={{width: "35%",}}>Date</div>
+                            <div style={{
+                                width: "20%",
+                                paddingLeft: "4px",
+                                paddingRight: "10px"
+                            }}>Action
+                            </div>
+                            <div style={{width: "45%"}}>Amount</div>
+                        </div>
+                        {ethData.map((t) =>
+                            <div style={{display: "flex", fontSize: ".8rem"}}>
+                                <div
+                                    style={{width: "35%",}}>{new Date(Number(t["timeStamp"])).toString().slice(3, 16)}</div>
+                                <div style={{
+                                    width: "20%",
+                                    paddingLeft: "4px",
+                                    paddingRight: "10px"
+                                }}>Transfer
+                                </div>
+                                <div style={{width: "45%"}}>{ethers.utils.formatEther(t["value"]).substring(0, 10)}...
+                                </div>
+                            </div>
+                        )}
+
+
+                    </div>
                 </Cell>
             </Grid>
         </>
