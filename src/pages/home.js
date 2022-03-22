@@ -10,16 +10,18 @@ import {Button, KIND, SHAPE} from "baseui/button";
 import {Notification} from "baseui/notification";
 import {DatePicker} from "baseui/datepicker";
 import {Select} from "baseui/select";
-import {Search} from "baseui/icon";
 
 import {ethers} from "ethers";
 
 import Toggle from "react-toggle";
 
+import Notif from "../components/notif";
+import SearchElement from "../components/searchElement"
 import Create from "../components/create";
 import Details from "../components/details";
 import Edit from "../components/edit";
 import TransactionHistory from "../components/transactionHistory";
+import FilterByRole from "../components/filterByRole";
 
 function Home() {
     // navigate
@@ -507,8 +509,6 @@ function Home() {
         setRoles(getUsers["data"]["roles"]);
     }, []);
 
-    console.log(ethers.utils.formatEther("1000001647867584"))
-
     // ethData
     console.log(ethData)
     console.log("Page render count: " + Math.random());
@@ -516,23 +516,9 @@ function Home() {
     return (
         <>
             {showMessage && (
-                <div
-                    style={{
-                        position: "fixed",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-
-                        paddingTop: ".5rem",
-                        paddingBottom: ".5rem",
-                        paddingLeft: "1.2rem",
-                        paddingRight: "1.2rem",
-                        fontFamily: "Montserrat",
-                        backgroundColor: messageColor,
-                    }}
-                >
-                    {message}
-                </div>
+                <Notif messageColor={messageColor} message={message}/>
             )}
+
             <Grid>
                 <Cell span={4}>
                     <div
@@ -565,49 +551,11 @@ function Home() {
               </span>
                         </div>
 
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginBottom: "1rem",
-                            }}
-                        >
-                            <p
-                                style={{
-                                    fontFamily: "Montserrat",
-                                    display: "inline-block",
-                                }}
-                            >
-                                Filter by Role
-                            </p>
+                        <FilterByRole filterListValue={filterListValue}
+                                      onChangeFilterList={(params) => setFilterListValue(params.value)}/>
 
-                            <Select
-                                overrides={{
-                                    Root: {style: {width: "10rem", display: "inline-block"}},
-                                }}
-                                searchable={false}
-                                options={[
-                                    {id: "STUDENT", color: "STUDENT"},
-                                    {id: "TEACHER", color: "TEACHER"},
-                                    {id: "ADMINISTRATOR", color: "ADMINISTRATOR"},
-                                ]}
-                                labelKey="id"
-                                valueKey="color"
-                                value={filterListValue}
-                                onChange={(params) => setFilterListValue(params.value)}
-                            />
-                        </div>
-
-                        <div>
-                            <form onSubmit={handleSubmitQuery}>
-                                <Input
-                                    startEnhancer={<Search size="1.2rem"/>}
-                                    placeholder="Name"
-                                    value={query}
-                                    onChange={handleChangeQuery}
-                                />
-                            </form>
-                        </div>
+                        <SearchElement handleSubmitQuery={handleSubmitQuery} queryValue={query}
+                                       handleChangeQuery={handleChangeQuery}/>
 
                         <div
                             style={{
@@ -718,9 +666,7 @@ function Home() {
                 )}
 
                 <Cell span={3}>
-                    {/* TransactionHistory component will be refactor*/}
-                    {/* <TransactionHistory transactions={ethData}/> */}
-
+                    {/* TransactionHistory component will be refactored*/}
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <p
                             style={{
@@ -789,7 +735,7 @@ function Home() {
                                     </div>
                                 </div>
                             )}
-                            
+
                         </div>
                     }
                 </Cell>
