@@ -93,6 +93,10 @@ function Home() {
         }
     }
 
+    function handleClickCopyWalletAddress() {
+        navigator.clipboard.writeText(ethAddress)
+    }
+
     async function handleClickName(userid) {
         for (var i = 0; i < users.length; i++) {
             if (users[i]["_id"] == userid) {
@@ -485,6 +489,7 @@ function Home() {
         // await provider.send("eth_requestAccounts", []);
         // const signer = provider.getSigner();
         // // end, template
+
         //
         // const address = await provider.listAccounts();
         // setEthAddress(address[0])
@@ -678,6 +683,7 @@ function Home() {
                             onChangeMiddlename={(e) => setMiddlename(e.currentTarget.value)}
                             valueWalletAddress={walletAddress}
                             onChangeWalletAddress={(e) => setWalletAddress(e.currentTarget.value)}
+                            onClickWalletAddress={handleClickCopyWalletAddress}
                             valueBirthdate={birthdate}
                             onChangeBirthdate={({date}) =>
                                 setBirthdate(Array.isArray(date) ? date : [date])

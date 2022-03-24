@@ -4,9 +4,14 @@ import {DatePicker} from "baseui/datepicker";
 import {Select} from "baseui/select";
 import {Button, KIND, SHAPE} from "baseui/button";
 import {Spinner} from "baseui/spinner";
+import Check from 'baseui/icon/check';
+
+import {StatefulPopover, PLACEMENT} from 'baseui/popover';
+import {ParagraphSmall} from 'baseui/typography';
 
 function Create(props) {
     // React.useState here...
+
     return (
         <>
             <div
@@ -125,16 +130,35 @@ function Create(props) {
                         >
                             Wallet Address
                         </p>
-                        <Input
-                            required
-                            overrides={{
-                                Root: {
-                                    style: {width: "20rem", display: "inline-block"},
-                                },
-                            }}
-                            value={props.valueWalletAddress}
-                            onChange={props.onChangeWalletAddress}
-                        />
+                        <StatefulPopover
+                            content={
+                                <div style={{
+                                    fontFamily: "Montserrat",
+                                    fontSize: "1.1rem",
+                                    padding: "1rem",
+                                    backgroundColor: "black",
+                                    color: "white"
+                                }}>
+                                    <span style={{marginRight: "1rem"}}><i className="bi bi-check-lg"></i></span>
+                                    <span>Copied to clipboard</span>
+                                </div>
+                            }
+                            accessibilityType={'tooltip'}
+                            placement={PLACEMENT.top}
+                        >
+                            <div onClick={props.onClickWalletAddress}>
+                                <Input
+                                    required
+                                    overrides={{
+                                        Root: {
+                                            style: {width: "20rem", display: "inline-block"},
+                                        },
+                                    }}
+                                    value={props.valueWalletAddress}
+                                    onChange={props.onChangeWalletAddress}
+                                />
+                            </div>
+                        </StatefulPopover>
                     </div>
 
                     <div
