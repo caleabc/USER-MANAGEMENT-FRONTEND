@@ -66,6 +66,9 @@ function Home() {
 
     var [currentMode, setCurrentMode] = React.useState("light")
 
+    // BLOCKCHAIN (crypto-eth)
+    var [ethAddress, setEthAddress] = React.useState("")
+
     // protectRoute
     // Protecting the route from unathorized access
     // adding checkpoint in endpoint
@@ -100,7 +103,7 @@ function Home() {
         }
     }
 
-    function handleClickAddUser() {
+    async function handleClickAddUser() {
         setCurrentSelectedSection("create");
         setLastname("");
         setFirstname("");
@@ -469,18 +472,47 @@ function Home() {
         setBirthdate([new Date()]);
     }
 
-    // ethData
+    // BLOCKCHAIN (crypto)
     React.useEffect(async function () {
 
         if (currentUser == undefined) {
             return
         }
 
+        // // Blockchain (crypto)
+        // // template
+        // const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        // await provider.send("eth_requestAccounts", []);
+        // const signer = provider.getSigner();
+        // // end, template
+        //
+        // const address = await provider.listAccounts();
+        // setEthAddress(address[0])
+
+        // etherscan must be replaced by ethers JS
         // get ethereum data
         var getEth = await axios.get(`https://api-kovan.etherscan.io/api?module=account&action=txlist&address=${currentUser["walletAddress"]}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${etherscanKey}`)
 
         setEthData(getEth["data"]["result"])
     }, [currentUser])
+
+    React.useEffect(async function () {
+        // BLOCKCHAIN (crypto)
+        // MetaMask (crypto dashboard/app)
+        // Ether JS(crypto library)
+        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        // Prompt user for account connections
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+
+        // get wallet address
+        var address = await signer.getAddress()
+        // ethAddress can be found on state
+        if (ethAddress !== address) {
+            setEthAddress(address)
+            setWalletAddress(address)
+        }
+    })
 
     // filter useEffect
     React.useEffect(async function () {
@@ -504,7 +536,6 @@ function Home() {
 
             // users data
             setUsers(newUsersData)
-
         }
     }, [filterListValue]);
 
@@ -518,7 +549,6 @@ function Home() {
         var getUsers = await axios.get(`http://localhost:5000/${protectRoute}/`);
 
         setUsersDataCopyForFilter(getUsers["data"]["users"])
-
     }, [users]);
 
     // this useEffect will only run, once
@@ -529,10 +559,21 @@ function Home() {
 
         setUsers(getUsers["data"]["users"]);
         setRoles(getUsers["data"]["roles"]);
+
+        // BLOCKCHAIN (crypto)
+        // MetaMask (crypto dashboard/app)
+        // Ether JS(crypto library)
+        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        // Prompt user for account connections
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+
+        // get wallet address
+        var address = await signer.getAddress()
+        setEthAddress(address)
     }, []);
 
-    // ethData
-    console.log(ethData)
+    console.log(ethAddress)
     console.log("Page render count: " + Math.random());
 
     return (
