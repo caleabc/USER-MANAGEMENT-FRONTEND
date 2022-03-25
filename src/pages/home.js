@@ -223,6 +223,16 @@ function Home() {
     function handleSubmitQuery(e) {
         e.preventDefault();
 
+        // original data of users
+        // can be found on usersDataCopyForFilter
+
+        if (query == "") {
+            // use spread operator for copying array or object
+            // because of immutability concern
+            setUsers([...usersDataCopyForFilter])
+            return
+        }
+
         for (var i = 0; i < users.length; i++) {
             if (users[i]["lastname"].toLowerCase().includes(query.toLowerCase())) {
                 return setUsers([users[i]])
@@ -683,7 +693,7 @@ function Home() {
                             onChangeMiddlename={(e) => setMiddlename(e.currentTarget.value)}
                             valueWalletAddress={walletAddress}
                             onChangeWalletAddress={(e) => setWalletAddress(e.currentTarget.value)}
-                            onClickWalletAddress={handleClickCopyWalletAddress}
+                            onClickCopyWalletAddress={handleClickCopyWalletAddress}
                             valueBirthdate={birthdate}
                             onChangeBirthdate={({date}) =>
                                 setBirthdate(Array.isArray(date) ? date : [date])

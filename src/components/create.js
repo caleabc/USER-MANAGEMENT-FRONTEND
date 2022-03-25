@@ -131,6 +131,7 @@ function Create(props) {
                             Wallet Address
                         </p>
                         <StatefulPopover
+                            onClick={props.onClickCopyWalletAddress}
                             content={
                                 <div style={{
                                     fontFamily: "Montserrat",
@@ -146,7 +147,7 @@ function Create(props) {
                             accessibilityType={'tooltip'}
                             placement={PLACEMENT.top}
                         >
-                            <div onClick={props.onClickWalletAddress}>
+                            <div>
                                 <Input
                                     required
                                     overrides={{
