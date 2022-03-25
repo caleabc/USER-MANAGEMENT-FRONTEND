@@ -15,8 +15,6 @@ import {ethers} from "ethers";
 
 import Toggle from "react-toggle";
 
-import Darkmode from "../components/darkmode";
-
 import Notif from "../components/notif";
 import SearchElement from "../components/searchElement"
 import Create from "../components/create";
@@ -74,24 +72,6 @@ function Home() {
     // adding checkpoint in endpoint
     var protectRoute = process.env.REACT_APP_PROTECT_ROUTE;
     var etherscanKey = process.env.REACT_APP_ETHERSCAN_KEY;
-
-    function handleClickDarkmode() {
-        if (currentMode == "light") {
-            // Update Css variables
-            var nid = document.querySelector(":root");
-            nid.style.setProperty("--backgroundColor", "#1F2023");
-            nid.style.setProperty("--color", "#EFEFEF");
-            setCurrentMode("black")
-            return
-        } else {
-            // Update Css variables
-            var nid = document.querySelector(":root");
-            nid.style.setProperty("--backgroundColor", "#FAFAFA");
-            nid.style.setProperty("--color", "#1F2023");
-            setCurrentMode("light")
-            return
-        }
-    }
 
     function handleClickCopyWalletAddress() {
         navigator.clipboard.writeText(ethAddress)
@@ -597,17 +577,7 @@ function Home() {
                 <Notif messageColor={messageColor} message={message}/>
             )}
 
-            <div style={{
-                position: "fixed",
-                right: "0",
-                padding: "1.5rem",
-                cursor: "pointer",
-                display: "none"
-            }}
-            >
-                <Darkmode currentMode={currentMode} onClickDarkmode={handleClickDarkmode}/>
-            </div>
-
+            
             <Grid>
                 <Cell span={4}>
                     <div
