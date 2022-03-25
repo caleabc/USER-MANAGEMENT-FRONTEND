@@ -569,7 +569,7 @@ function Home() {
     }, []);
 
     console.log(ethAddress)
-    console.log("Page render count: " + Math.random());
+    console.log("Page render count:  " + Math.random());
 
     return (
         <>
@@ -577,7 +577,7 @@ function Home() {
                 <Notif messageColor={messageColor} message={message}/>
             )}
 
-            
+
             <Grid>
                 <Cell span={4}>
                     <div
