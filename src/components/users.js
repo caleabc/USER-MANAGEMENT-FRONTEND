@@ -1,114 +1,33 @@
 import * as React from "react";
-import {Select} from "baseui/select";
-import {Input} from "baseui/input";
-import {Search} from "baseui/icon";
 
+// this component currently standby
 function Users(props) {
     return (
         <div
             style={{
-                borderRight: "10px solid lightgray",
-                height: "100vh",
-                paddingRight: "1rem",
+                marginTop: "1rem",
+                border: "2px solid gray",
+                borderRadius: "5px",
+                height: "30rem",
+                padding: "1rem",
+                overflowY: "scroll",
             }}
         >
-            <div style={{display: "flex", justifyContent: "space-between"}}>
+            {props.users.map((u) => (
                 <p
                     style={{
                         fontFamily: "Montserrat",
-                        fontSize: "2.5rem",
-                        fontWeight: "900",
-                    }}
-                >
-                    Users
-                </p>
-                <span
-                    style={{
-                        alignSelf: "center",
-                        color: "gray",
-                        fontSize: "2.5rem",
                         cursor: "pointer",
+                        backgroundColor: props.currentHoverUser == u["_id"] ? "lightgray" : ""
                     }}
-                    onClick={props.handleClickAddUserP}
+                    key={u["_id"]}
+                    onMouseEnter={props.onMouseEnter}
+                    onMouseLeave={props.handleMouseLeave}
+                    onClick={props.onClickName}
                 >
-                <i className="bi bi-plus-circle-dotted"></i>
-              </span>
-            </div>
-
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "1rem",
-                }}
-            >
-                <p
-                    style={{
-                        fontFamily: "Montserrat",
-                        display: "inline-block",
-                    }}
-                >
-                    Filter by Role
+                    {u["lastname"]}, {u["firstname"]}
                 </p>
-
-                <Select
-                    overrides={{
-                        Root: {style: {width: "10rem", display: "inline-block"}},
-                    }}
-                    searchable={false}
-                    options={[
-                        {id: "STUDENT", color: "STUDENT"},
-                        {id: "TEACHER", color: "TEACHER"},
-                        {id: "ADMINISTRATOR", color: "ADMINISTRATOR"},
-                    ]}
-                    labelKey="id"
-                    valueKey="color"
-                    value={props.filterListValueP}
-                    onChange={props.onChangeFilterListValueP}
-                />
-            </div>
-
-            <div>
-                <form onSubmit={props.handleSubmitQueryP}>
-                    <Input
-                        startEnhancer={<Search size="1.2rem"/>}
-                        placeholder="Name"
-                        value={props.queryP}
-                        onChange={props.handleChangeQueryP}
-                    />
-                </form>
-            </div>
-
-            <div
-                style={{
-                    marginTop: "1rem",
-                    border: "2px solid gray",
-                    borderRadius: "5px",
-                    height: "30rem",
-                    padding: "1rem",
-                    overflowY: "scroll",
-                }}
-            >
-                {props.usersP.map((u) => (
-                    <p
-                        style={{
-                            fontFamily: "Montserrat",
-                            cursor: "pointer",
-                            backgroundColor: props.currentHoverUserP == u["_id"] ? "lightgray" : ""
-                        }}
-                        key={u["_id"]}
-                        onMouseEnter={function () {
-                            props.handleMouseEnter(u["_id"])
-                        }}
-                        onMouseLeave={handleMouseLeave}
-                        onClick={function () {
-                            handleClickName(u["_id"]);
-                        }}
-                    >
-                        {u["lastname"]}, {u["firstname"]}
-                    </p>
-                ))}
-            </div>
+            ))}
         </div>
     )
 }

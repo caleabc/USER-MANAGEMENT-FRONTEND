@@ -22,6 +22,9 @@ import Details from "../components/details";
 import Edit from "../components/edit";
 import TransactionHistory from "../components/transactionHistory";
 import FilterByRole from "../components/filterByRole";
+import UserHeading from "../components/userHeading";
+import CreateIcon from "../components/createIcon";
+import User from "../components/user"
 
 function Home() {
     // navigate
@@ -73,7 +76,7 @@ function Home() {
     var protectRoute = process.env.REACT_APP_PROTECT_ROUTE;
     var etherscanKey = process.env.REACT_APP_ETHERSCAN_KEY;
 
-    function handleClickCopyWalletAddress() {
+    async function handleClickCopyWalletAddress() {
         navigator.clipboard.writeText(ethAddress)
     }
 
@@ -88,6 +91,14 @@ function Home() {
     }
 
     async function handleClickAddUser() {
+
+        // // Blockchain (crypto)
+        // // template
+        // const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        // await provider.send("eth_requestAccounts", []);
+        // const signer = provider.getSigner();
+        // // end, template
+
         setCurrentSelectedSection("create");
         setLastname("");
         setFirstname("");
@@ -181,10 +192,14 @@ function Home() {
     }
 
     function handleClickStatus() {
-        setStatusValue(false);
-        setMessage("Account inactive");
-        setShowMessage(true);
-        setMessageColor("#FA8072");
+        if (statusValue == true) {
+            setStatusValue(false);
+            setMessage("Account inactive");
+            setShowMessage(true);
+            setMessageColor("#FA8072");
+        } else {
+            setStatusValue(true);
+        }
 
         // adding setTimeout
         // setTimeout is asynchronous
@@ -380,92 +395,6 @@ function Home() {
         // end of handleSubmitEdit
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-
-        var data = {
-            lastname: lastname,
-            firstname: firstname,
-            middlename: middlename,
-            email: email,
-            userRole: role[0]["id"],
-            birthdate: birthdate,
-        };
-
-        // ============
-        // EDIT SECTION
-        // ============
-        // this will be refactor to become cleaner code
-        if (currentSelectedSection == "edit") {
-            data["originalUserRoleId"] = currentUser["userRole"];
-            data["currentUserId"] = currentUser["_id"];
-
-            // communicate to backend for updating user
-            // original address => "/user/update"
-            var send = await axios.post(
-                `http://localhost:5000/${protectRoute}/user/update`,
-                data
-            );
-
-            setMessage("User updated");
-            setShowMessage(true);
-            setMessageColor("#8A9A5B");
-
-            var handleClickAddUserMate = handleClickAddUser;
-            // call
-            handleClickAddUserMate();
-
-            // adding setTimeout
-            // setTimeout is asynchronous
-            setTimeout(function () {
-                setShowMessage(false);
-            }, 10000);
-
-            return;
-        }
-
-        // check if email is already taken
-        for (var i = 0; i < users.length; i++) {
-            if (email == users[i]["email"]) {
-                setMessage("Email already taken");
-                setShowMessage(true);
-                setMessageColor("#FA8072");
-
-                // adding setTimeout
-                // setTimeout is asynchronous
-                setTimeout(function () {
-                    setShowMessage(false);
-                }, 10000);
-
-                return;
-            }
-        }
-
-        // communicate to backend for creating user
-        // original address => "/user/create"
-        var send = await axios.post(
-            `http://localhost:5000/${protectRoute}/user/create`,
-            data
-        );
-
-        setMessage("User added");
-        setShowMessage(true);
-        setMessageColor("#8A9A5B");
-
-        // adding setTimeout
-        // setTimeout is asynchronous
-        setTimeout(function () {
-            setShowMessage(false);
-        }, 10000);
-
-        setLastname("");
-        setFirstname("");
-        setMiddlename("");
-        setEmail("");
-        setRole("");
-        setBirthdate([new Date()]);
-    }
-
     // BLOCKCHAIN (crypto)
     React.useEffect(async function () {
 
@@ -479,6 +408,7 @@ function Home() {
         // await provider.send("eth_requestAccounts", []);
         // const signer = provider.getSigner();
         // // end, template
+
 
         //
         // const address = await provider.listAccounts();
@@ -568,8 +498,9 @@ function Home() {
         setEthAddress(address)
     }, []);
 
-    console.log(ethAddress)
-    console.log("Page render count:  " + Math.random());
+    // ethData is my crypto data
+    console.log(ethData)
+    // console.log( "Page render count:  " + Math.random() );
 
     return (
         <>
@@ -588,26 +519,8 @@ function Home() {
                         }}
                     >
                         <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <p
-                                style={{
-                                    fontFamily: "Montserrat",
-                                    fontSize: "2.5rem",
-                                    fontWeight: "900",
-                                }}
-                            >
-                                Users
-                            </p>
-                            <span
-                                style={{
-                                    alignSelf: "center",
-                                    color: "gray",
-                                    fontSize: "2.5rem",
-                                    cursor: "pointer",
-                                }}
-                                onClick={handleClickAddUser}
-                            >
-                <i className="bi bi-plus-circle-dotted"></i>
-              </span>
+                            <UserHeading/>
+                            <CreateIcon handleClickAddUser={handleClickAddUser}/>
                         </div>
 
                         <FilterByRole filterListValue={filterListValue}
@@ -626,25 +539,16 @@ function Home() {
                                 overflowY: "scroll",
                             }}
                         >
-                            {users.map((u) => (
-                                <p
-                                    style={{
-                                        fontFamily: "Montserrat",
-                                        cursor: "pointer",
-                                        backgroundColor: currentHoverUser == u["_id"] ? "lightgray" : ""
-                                    }}
-                                    key={u["_id"]}
-                                    onMouseEnter={function () {
-                                        handleMouseEnter(u["_id"])
-                                    }}
-                                    onMouseLeave={handleMouseLeave}
-                                    onClick={function () {
-                                        handleClickName(u["_id"]);
-                                    }}
-                                >
-                                    {u["lastname"]}, {u["firstname"]}
-                                </p>
-                            ))}
+                            {users.map((u) =>
+                                <User currentHoverUser={currentHoverUser} u={u} onMouseEnter={function () {
+                                    handleMouseEnter(u["_id"])
+                                }}
+                                      handleMouseLeave={handleMouseLeave}
+                                      onClickName={function () {
+                                          handleClickName(u["_id"]);
+                                      }}
+                                />
+                            )}
                         </div>
                     </div>
                 </Cell>
@@ -785,7 +689,7 @@ function Home() {
                                     borderRadius: "1rem"
                                 }}>
                                     <div
-                                        style={{width: "35%",}}>{new Date(Number(t["timeStamp"])).toString().slice(3, 16)}</div>
+                                        style={{width: "35%",}}>{new Date(Number(t["timeStamp"]) * 1000).toString().slice(3, 16)}</div>
                                     <div style={{
                                         width: "20%",
                                         paddingLeft: "4px",

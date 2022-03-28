@@ -33,10 +33,11 @@ function Details(props) {
                         }}
                     >
             <i
+                style={{cursor: "pointer"}}
                 className="bi bi-pencil-square"
                 onClick={props.handleClickEdit}
             ></i>
-            <i className="bi bi-trash" onClick={props.handleClickDelete}></i>
+            <i style={{cursor: "pointer"}} className="bi bi-trash" onClick={props.handleClickDelete}></i>
           </span>
                 </div>
 
